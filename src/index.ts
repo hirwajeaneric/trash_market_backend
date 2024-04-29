@@ -10,7 +10,6 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-
 const StartServer = async () => {
     const app = express();
     await Database();
