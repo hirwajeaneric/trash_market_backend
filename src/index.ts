@@ -1,12 +1,8 @@
 import express, { Request, Response } from 'express';
-import cors from 'cors';
 import "dotenv/config";
-import mongoose from 'mongoose';
 import { v2 as cloudinary } from 'cloudinary';
-
-mongoose
-.connect(process.env.MONGODB_CONNECTION_STRING as string)
-.then(() => console.log('Connected to database!'));
+import Database  from './services/Database';
+import ExpressServer from './services/ExpressServer';
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -14,16 +10,15 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const app = express();
-app.use(express.json());
-app.use(cors());
 
-app.get("/health", async(req: Request, res: Response ) => {
-    res.send({
-        message: "Health OK!"
-    });
-});
+const StartServer = async () => {
+    const app = express();
+    await Database();
+    await ExpressServer(app);
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-})
+    app.listen(3000, () => {
+        console.log('Server is running on port 3000');
+    })
+};
+
+StartServer();
