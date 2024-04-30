@@ -10,8 +10,19 @@ const handleValidationErrors = async (req: Request, res: Response, next: NextFun
     next();
 };
 
+export const validateUserSignIn = [
+    body('email')
+        .isEmail()
+        .withMessage('Invalid email')
+        .normalizeEmail(),
+    body('password')
+        .isLength({ min: 6 })
+        .withMessage('Password must be at least 6 characters long')
+        .isStrongPassword()
+        .withMessage('Password must be at least 6 characters with an Upper case character, lower case character, symbol and digit.'),
+];
 
-export const validateUser = [
+export const validateUserSignUp = [
     body('firstName')
         .isString()
         .withMessage('First name must be a string')
