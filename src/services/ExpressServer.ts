@@ -1,5 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
+import ErrorHandlerMiddleware from '../middlewares/ErrorHandler';
 
 export default async (app: Application) => {
     app.use(express.json());
@@ -10,6 +11,8 @@ export default async (app: Application) => {
             message: "Health OK!"
         });
     });
+
+    app.use(ErrorHandlerMiddleware);
 
     return app;
 }

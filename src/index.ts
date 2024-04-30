@@ -15,9 +15,7 @@ const StartServer = async () => {
     await Database();
     await ExpressServer(app);
 
-    app.listen(3000, () => {
-        console.log('Server is running on port 3000');
-    })
+    app.listen(3000, () => console.log('Server is running on port 3000'));
 };
 
 StartServer();
