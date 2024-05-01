@@ -62,7 +62,7 @@ export const signIn = asyncWrapper(async (req: Request, res: Response, next: Nex
     res
         .cookie("access-token", token, { httpOnly: true, expires: new Date(Date.now() + 3600000) })
         .status(200)
-        .json({ user: rest, token });
+        .json({ message: "Sign in successful", user: rest, token });
 });
 
 export const regenerateOTP = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
