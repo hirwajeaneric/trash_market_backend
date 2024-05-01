@@ -4,7 +4,6 @@ import UserModel from "../model/user.model";
 import { GeneratePassword, GenerateSalt, GenerateToken, ValidatePassword, ValidateToken } from "../utils/password.utils";
 import { GenerateOTP, sendEmail } from "../utils/notification.utils";
 import { Token } from "../model/token.model";
-import { userInfo } from "os";
 
 export const signUp = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     // Check existing email
@@ -26,7 +25,7 @@ export const signUp = asyncWrapper(async (req: Request, res: Response, next: Nex
 
     // Send email
     if (recordedUser) {
-        await sendEmail(req.body.email, "Verify your account", `Your OTP is ${otp}`);
+        await sendEmail(req.body.email, "Verify your account", `Hello ${recordedUser.lastName},\n\nYour OTP is ${otp}. \n\nClick on the link bellow to validate your account: \n${process.env.CLIENT_URL}/verify-account?id=${recordedUser._id}.\n\nBest regards,\n\nTrashMark`);
     }
     // Send response
     res.status(200).json({ message: "Account created!", user: recordedUser._id });
@@ -67,7 +66,24 @@ export const signIn = asyncWrapper(async (req: Request, res: Response, next: Nex
 });
 
 export const regenerateOTP = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const foundUser = await UserModel.findById(req.body.id);
+    if (!foundUser) {
+        return res.status(400).json({ message: "Account with this email is not registered!" });
+    };
+
+    // Generate new OTP
+    const { otp, expiryDate } = GenerateOTP();
+
+    // Update user info
+    foundUser.otp = otp;
+    foundUser.otpExpiryTime = expiryDate;
+    await foundUser.save();
+
+    // Send email
+    await sendEmail(foundUser.email, "Verify your account", `Hello ${foundUser.lastName},\n\nYour OTP is ${otp}. \n\nClick on the link bellow to validate your account: \n${process.env.CLIENT_URL}/verify-account?id=${foundUser._id}\n\nBest regards,\n\nTrashMark`);
     
+    // Send response
+    res.status(200).json({ message: "OTP resent!" });
 });
 
 export const verifyOTP = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
@@ -110,7 +126,7 @@ export const forgotPassword = asyncWrapper(async (req: Request, res: Response, n
     });
 
     const link = `${process.env.CLIENT_URL}/reset-password?token=${token}&id=${foundUser._id}`
-    const emailBody = `Click on the link bellow to reset your password.\n\n${link}`;
+    const emailBody = `Hello ${foundUser.lastName},\n\nClick on the link bellow to reset your password.\n\n${link}\n\nBest regards,\n\nTrashMark`;
 
     await sendEmail(foundUser.email, "Reset your password", emailBody);
 
