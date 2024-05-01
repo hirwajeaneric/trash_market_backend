@@ -56,7 +56,7 @@ export const signIn = asyncWrapper(async (req: Request, res: Response, next: Nex
         verified: existingUser.verified
     });
 
-    const { password: hashedPassword, ...rest } = existingUser._doc;
+    const { password: hashedPassword, salt,otp, otpExpiryTime,verified, ...rest } = existingUser._doc;
 
     // Send response
     res
@@ -152,4 +152,29 @@ export const resetPassword = asyncWrapper(async (req: Request, res: Response, ne
     await Token.deleteOne({ user: req.user?._id });
 
     res.status(200).json({ message: "Your password has been reset!" });
+});
+
+export const updateAccount = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    };
+
+    const updatedUser = await UserModel.findByIdAndUpdate(req.user?._id, {
+        $set: {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            phone: req.body.phone,
+            addressLine1: req.body.addressLine1,
+            addressLine2: req.body.addressLine2,
+            city: req.body.city,
+        },
+        new: true
+    });
+    if (!updatedUser) {
+        return res.status(400).json({ message: "User not found" });
+    };
+
+    res.status(200).json({ message: "Account info updated successfully!", user: updatedUser });
 });
