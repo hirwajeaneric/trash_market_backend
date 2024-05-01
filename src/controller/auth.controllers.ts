@@ -4,6 +4,7 @@ import UserModel from "../model/user.model";
 import { GeneratePassword, GenerateSalt, GenerateToken, ValidatePassword, ValidateToken } from "../utils/password.utils";
 import { GenerateOTP, sendEmail } from "../utils/notification.utils";
 import { Token } from "../model/token.model";
+import { userInfo } from "os";
 
 export const signUp = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     // Check existing email
@@ -28,7 +29,7 @@ export const signUp = asyncWrapper(async (req: Request, res: Response, next: Nex
         await sendEmail(req.body.email, "Verify your account", `Your OTP is ${otp}`);
     }
     // Send response
-    res.status(200).json({ message: "Account created!" });
+    res.status(200).json({ message: "Account created!", user: recordedUser._id });
 });
 
 
@@ -65,10 +66,13 @@ export const signIn = asyncWrapper(async (req: Request, res: Response, next: Nex
         .json({ user: rest, token });
 });
 
-
+export const regenerateOTP = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    
+});
 
 export const verifyOTP = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const foundUser = await UserModel.findOne({ otp: req.body.otp });
+    
     if (!foundUser) {
         return res.status(400).json({ message: "Invalid OTP" });
     };

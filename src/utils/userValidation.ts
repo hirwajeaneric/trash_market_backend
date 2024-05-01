@@ -24,6 +24,7 @@ export const validateUserSignIn = [
         .withMessage('Password is required')
         .isStrongPassword()
         .withMessage('Password must be at least 6 characters with an Upper case character, lower case character, symbol and digit.'),
+        handleValidationErrors
 ];
 
 export const validateUserSignUp = [
