@@ -28,7 +28,7 @@ export const signUp = asyncWrapper(async (req: Request, res: Response, next: Nex
         await sendEmail(req.body.email, "Verify your account", `Your OTP is ${otp}`);
     }
     // Send response
-    res.status(200).json({ message: recordedUser });
+    res.status(200).json({ message: "Account created!" });
 });
 
 

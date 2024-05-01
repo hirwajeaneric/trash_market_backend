@@ -12,12 +12,16 @@ const handleValidationErrors = async (req: Request, res: Response, next: NextFun
 
 export const validateUserSignIn = [
     body('email')
+        .not()
+        .isEmpty()
+        .withMessage('Email is required')
         .isEmail()
         .withMessage('Invalid email')
         .normalizeEmail(),
     body('password')
-        .isLength({ min: 6 })
-        .withMessage('Password must be at least 6 characters long')
+        .not()
+        .isEmpty()
+        .withMessage('Password is required')
         .isStrongPassword()
         .withMessage('Password must be at least 6 characters with an Upper case character, lower case character, symbol and digit.'),
 ];
@@ -34,12 +38,17 @@ export const validateUserSignUp = [
         .isLength({ min: 2 })
         .withMessage('Last name is required'),
     body('email')
+        .not()
+        .isEmpty()
+        .withMessage('Email is required')
         .isEmail()
         .withMessage('Invalid email')
         .normalizeEmail(),
     body('phone')
         .not()
         .isEmpty()
+        .withMessage('Phone number is required')
+        .isLength({ min: 10, max: 10 })
         .withMessage('Invalid phone number'),
     body('password')
         .isLength({ min: 6 })
@@ -61,11 +70,11 @@ export const validateOTP = [
 
 export const validateEmail = [
     body('email')
-        .isEmail()
-        .withMessage('Invalid email')
         .not()
         .isEmpty()
-        .withMessage('Email is required'),
+        .withMessage('Email is required')
+        .isEmail()
+        .withMessage('Invalid email'),
     handleValidationErrors
 ];
 
