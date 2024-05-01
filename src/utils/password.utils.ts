@@ -47,7 +47,7 @@ export const ValidatePassword = async (enteredPassword: string, savedPassword: s
  * @returns signature string of text (a jwt token)
  */
 export const GenerateToken = async (payload: UserPayload) => {
-    return await jwt.sign(payload, SECRET_KEY as string, { expiresIn: '1d'}) // Other possible time of expiration formats are: 30m, 1h, 1d,...
+    return jwt.sign(payload, SECRET_KEY as string, { expiresIn: '1d'}) // Other possible time of expiration formats are: 30m, 1h, 1d,...
 };
 
 /**
@@ -59,8 +59,9 @@ export const GenerateToken = async (payload: UserPayload) => {
 export const ValidateToken = async(req: Request) => {
     const signature = req.get('Authorization');
     if (signature) {
-        const payload = await jwt.verify(signature.split(' ')[1], SECRET_KEY as string) as UserPayload;
+        const payload = jwt.verify(signature.split(' ')[1], SECRET_KEY as string) as UserPayload;
         req.user = payload;
+        
         return true;
     }
 }

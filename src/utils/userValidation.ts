@@ -50,4 +50,31 @@ export const validateUserSignUp = [
     body('addressLine2').optional().isString(),
     body('city').optional().isString(),
     handleValidationErrors
-]
+];
+
+export const validateOTP = [
+    body('otp')
+        .isLength({ min: 6, max: 6 })
+        .withMessage('Invalid otp'),
+    handleValidationErrors
+];
+
+export const validateEmail = [
+    body('email')
+        .isEmail()
+        .withMessage('Invalid email')
+        .not()
+        .isEmpty()
+        .withMessage('Email is required'),
+    handleValidationErrors
+];
+
+export const validatePasswordReset = [
+    body('password')
+        .not()
+        .isEmpty()
+        .withMessage('Password must be provided')
+        .isStrongPassword()
+        .withMessage('Password must be at least 6 characters with an Upper case character, lower case character, symbol and digit.'),
+    handleValidationErrors
+];

@@ -9,10 +9,12 @@ interface UserDoc extends Document {
     addressLine1: string;
     addressLine2: string;
     verified: boolean;
+    salt: string;
     city: string;
     role: "user" | "admin";
     otp: number;
     otpExpiryTime: Date;
+    _doc: UserDoc;
 };
 
 const UserSchema = new Schema({
