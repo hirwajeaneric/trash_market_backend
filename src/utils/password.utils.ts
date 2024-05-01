@@ -4,6 +4,14 @@ import { Request } from 'express';
 import { UserPayload } from '../dto/auth.dto';
 import { SECRET_KEY } from '../config';
 
+declare global {
+    namespace Express {
+        interface Request {
+            user?: UserPayload
+        }
+    }
+};
+
 /**
  * This function generates a salt to be used to generate passwords.
  * @returns salt string

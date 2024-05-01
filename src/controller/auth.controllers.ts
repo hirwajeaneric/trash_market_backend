@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import asyncWrapper from "../middlewares/AsyncWrapper";
-import { UserLoginInput } from "../dto/auth.dto";
 import UserModel from "../model/user.model";
 import { GeneratePassword, GenerateSalt } from "../utils/password.utils";
 import { GenerateOTP, sendEmail } from "../utils/notification.utils";
 
-const signUp = asyncWrapper(async(req: Request, res: Response, next: NextFunction) => {
+export const signUp = asyncWrapper(async(req: Request, res: Response, next: NextFunction) => {
     // Check existing email
     const existingUser = await UserModel.findOne({ email: req.body.email });
     if (existingUser) {

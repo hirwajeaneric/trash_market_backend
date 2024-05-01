@@ -4,7 +4,7 @@ interface CustomError extends Error {
   statusCode: number;
   code?: number; // Add optional code property
   details?: { message: string }[]; // Array of objects with type { message: string }
-  keyValue?: [string];
+  keyValue: {};
   value?: string;
 }
 

@@ -21,7 +21,7 @@ const UserSchema = new Schema({
     email: { type: String, required: true },
     phone: { type: String, required: true },
     password: { type: String, required: true },
-    salt: { type: Number, required: true },
+    salt: { type: String, required: true },
     verified: { type: Boolean, required: true, default: false },
     otp: { type: Number, required: true,},
     otpExpiryTime: { type: Date, required: true,},

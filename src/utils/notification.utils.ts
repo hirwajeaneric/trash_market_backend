@@ -33,10 +33,9 @@ export const sendEmail = (recipient: string, subject: string, body: string) => {
  * Generate an OTP with a given validity period.
  * @returns an object containing the OTP and its expiry date
  */
-export const GenerateOTP = () => {
+export const GenerateOTP = (): { otp: number, expiryDate: Date} => {
     const otp = Math.floor(100000 + Math.random() * 900000);
-    const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + (30 * 60 * 1000));
+    const expiryDate = new Date(new Date().getTime() + (30 * 60 * 1000));
 
     return { otp, expiryDate };
 };
