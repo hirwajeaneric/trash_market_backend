@@ -6,6 +6,7 @@ interface UserDoc extends Document {
     email: string;
     phone: string;
     password: string;
+    code: string;
     addressLine1: string;
     addressLine2: string;
     verified: boolean;
@@ -22,6 +23,7 @@ const UserSchema = new Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true },
     phone: { type: String, required: true },
+    code: { type: String, required: false },
     password: { type: String, required: true },
     salt: { type: String, required: true },
     verified: { type: Boolean, required: true, default: false },

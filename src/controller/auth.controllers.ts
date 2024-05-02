@@ -155,23 +155,35 @@ export const resetPassword = asyncWrapper(async (req: Request, res: Response, ne
 });
 
 export const updateAccount = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body);
+    console.log(req.headers);
+    
+    
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     };
 
-    const updatedUser = await UserModel.findByIdAndUpdate(req.user?._id, {
+    if (req.body.code || req.body.code.length!== 6) {
+        return res.status(400).json({ message: "Invalid mobile payment code" });
+    }
+
+    await UserModel.findByIdAndUpdate(req.user?._id, {
         $set: {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             email: req.body.email,
             phone: req.body.phone,
+            code: req.body.code,
             addressLine1: req.body.addressLine1,
             addressLine2: req.body.addressLine2,
             city: req.body.city,
         },
         new: true
     });
+    
+    const updatedUser = await UserModel.findById(req.user?._id);
+    
     if (!updatedUser) {
         return res.status(400).json({ message: "User not found" });
     };
