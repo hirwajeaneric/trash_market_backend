@@ -1,2 +1,2 @@
 export * from './auth.controllers';
-export * from './userManagement.controllers';
+export * from './product.controllers';

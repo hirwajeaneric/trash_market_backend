@@ -105,8 +105,6 @@ export const verifyOTP = asyncWrapper(async (req: Request, res: Response, next: 
     }
 });
 
-
-
 export const forgotPassword = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const foundUser = await UserModel.findOne({ email: req.body.email });
     if (!foundUser) {
@@ -134,7 +132,6 @@ export const forgotPassword = asyncWrapper(async (req: Request, res: Response, n
 });
 
 
-
 export const resetPassword = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -155,18 +152,10 @@ export const resetPassword = asyncWrapper(async (req: Request, res: Response, ne
 });
 
 export const updateAccount = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body);
-    console.log(req.headers);
-    
-    
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     };
-
-    if (req.body.code || req.body.code.length!== 6) {
-        return res.status(400).json({ message: "Invalid mobile payment code" });
-    }
 
     await UserModel.findByIdAndUpdate(req.user?._id, {
         $set: {

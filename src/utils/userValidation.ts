@@ -24,7 +24,7 @@ export const validateUserSignIn = [
         .withMessage('Password is required')
         .isStrongPassword()
         .withMessage('Password must be at least 6 characters with an Upper case character, lower case character, symbol and digit.'),
-        handleValidationErrors
+    handleValidationErrors
 ];
 
 export const validateUserSignUp = [
@@ -56,6 +56,41 @@ export const validateUserSignUp = [
         .withMessage('Password must be at least 6 characters long')
         .isStrongPassword()
         .withMessage('Password must be at least 6 characters with an Upper case character, lower case character, symbol and digit.'),
+    body('addressLine1').optional().isString(),
+    body('addressLine2').optional().isString(),
+    body('city').optional().isString(),
+    handleValidationErrors
+];
+
+export const validateUpdateUserInfo = [
+    body('firstName')
+        .isString()
+        .withMessage('First name must be a string')
+        .isLength({ min: 2 })
+        .withMessage('First name is required'),
+    body('lastName')
+        .isString()
+        .withMessage('Last name must be a string')
+        .isLength({ min: 2 })
+        .withMessage('Last name is required'),
+    body('email')
+        .not()
+        .isEmpty()
+        .withMessage('Email is required')
+        .isEmail()
+        .withMessage('Invalid email')
+        .normalizeEmail(),
+    body('phone')
+        .not()
+        .isEmpty()
+        .withMessage('Phone number is required')
+        .isLength({ min: 10, max: 10 })
+        .withMessage('Invalid phone number'),
+    body('code')
+        .optional()
+        .isString()
+        .isLength({ min: 6, max: 6 })
+        .withMessage('Invalid code, payment code must be 6 characters long'),
     body('addressLine1').optional().isString(),
     body('addressLine2').optional().isString(),
     body('city').optional().isString(),

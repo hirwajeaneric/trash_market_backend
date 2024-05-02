@@ -1,6 +1,6 @@
 import { model, Document, Schema } from "mongoose";
 
-interface ProductDoc extends Document {
+export interface ProductDoc extends Document {
     name: string;
     description: string;
     quantity: number;
@@ -9,8 +9,9 @@ interface ProductDoc extends Document {
     unitPrice: number;
     addressLine1: string;
     addressLine2: string;
+    paid: boolean;
     verified: boolean;
-    imageFile: string;
+    imageFiles: [string];
     deliveryStatus: DeliveryStatus;
     type: ['Home Appliance'| 'Clothing' | 'Shoes' | 'Furniture' | 'Electronics' | 'Phone' | 'Computer' | 'Part of house' | 'Cereals' | 'Other food items'];
     category: 'Renewable' | 'Non-renewable';
@@ -26,7 +27,7 @@ const ProductSchema = new Schema({
     addressLine1: { type: String, required: true },
     addressLine2: { type: Number, required: true },
     verified: { type: Boolean, required: true, default: false },
-    imageFile: { type: Number, required: true },
+    imageFiles: { type: [String], required: true },
     paid: { type: Boolean, required: true, default: false },
     deliveryStatus: {
         client: { 

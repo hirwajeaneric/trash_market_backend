@@ -4,6 +4,7 @@ import ErrorHandlerMiddleware from '../middlewares/ErrorHandler';
 import userRouter from '../routes/user.routes';
 import bodyParser from 'body-parser';
 import path from 'path';
+import productRouter from '../routes/product.routes';
 
 export default async (app: Application) => {
     app.use(bodyParser.json());
@@ -26,8 +27,7 @@ export default async (app: Application) => {
     });
 
     app.use('/api/v1/auth', userRouter);
-    // app.use('/api/v1/user', userRouter);
-    // app.use('/api/v1/product', userRouter);
+    app.use('/api/v1/product', productRouter);
 
     app.use(ErrorHandlerMiddleware);
 
