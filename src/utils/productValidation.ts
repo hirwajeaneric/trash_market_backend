@@ -12,13 +12,14 @@ const handleValidationErrors = async (req: Request, res: Response, next: NextFun
 
 export const validateAddProduct = [
   body('name')
-    .isString()
-    .withMessage('Product name must be a string')
+    .not()
+    .isEmpty()
+    .withMessage('Product name is required')
     .isLength({ min: 3 })
     .withMessage('Product name must be at least 3 characters long'),
   body('description')
-    .isString()
-    .withMessage('Product description must be a string')
+    .isEmpty()
+    .withMessage('Product description is required')
     .isLength({ min: 10 })
     .withMessage('Product description must be at least 10 characters long'),
   body('quantity')

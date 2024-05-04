@@ -1,5 +1,9 @@
 import { model, Document, Schema } from "mongoose";
 
+type DeliveryStatus = {
+    client: "Pending" | "Recieved",
+    seller: "Pending" | "Delivered",
+}
 export interface ProductDoc extends Document {
     name: string;
     description: string;

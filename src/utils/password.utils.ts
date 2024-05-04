@@ -65,3 +65,13 @@ export const ValidateToken = async(req: Request) => {
         return true;
     }
 }
+
+export const ValidateAdmin = async(req: Request) => {
+    const signature = req.get('Authorization');
+    if (signature) {
+        const payload = jwt.verify(signature.split(' ')[1], SECRET_KEY as string) as UserPayload;
+        req.user = payload;
+
+        return true;
+    }
+}
