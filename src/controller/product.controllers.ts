@@ -126,3 +126,24 @@ export const getBoughtProducts = asyncWrapper(async (req: Request, res: Response
     res.status(200).json({ products: boughtProducts });
   });
   
+  export const deleteProduct = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    // Validate token (assuming authorization is required for deletion)
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+      return res.status(400).json({ message: "Access denied" });
+    }
+  
+    const { id } = req.query;
+  
+    // Find the product to delete
+    const productToDelete = await ProductModel.findById(id);
+  
+    if (!productToDelete) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+  
+    // Delete the product
+    await productToDelete.deleteOne();
+  
+    res.status(200).json({ message: "Product deleted successfully" });
+  });

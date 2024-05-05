@@ -1,6 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import multer from 'multer';
-import { addNew, getAllAvailableProducts, getBoughtProducts, getProductById, getUserProducts, list, update } from "../controller";
+import { addNew, deleteProduct, getAllAvailableProducts, getBoughtProducts, getProductById, getUserProducts, list, update } from "../controller";
 import { validateAddProduct } from "../utils/productValidation";
 
 const productRouter = express.Router();
@@ -24,5 +24,6 @@ productRouter.get('/user', getUserProducts);
 productRouter.get('/findById', getProductById);
 productRouter.get('/available', getAllAvailableProducts);
 productRouter.get('/baught', getBoughtProducts);
+productRouter.delete('/delete', deleteProduct);
 
 export default productRouter;
