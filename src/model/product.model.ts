@@ -15,7 +15,7 @@ export interface ProductDoc extends Document {
     addressLine2: string;
     paid: boolean;
     verified: boolean;
-    imageFiles: [string];
+    imageFiles: string[];
     deliveryStatus: DeliveryStatus;
     type: ['Home Appliance'| 'Clothing' | 'Shoes' | 'Furniture' | 'Electronics' | 'Phone' | 'Computer' | 'Part of house' | 'Cereals' | 'Other food items'];
     category: 'Renewable' | 'Non-renewable';
