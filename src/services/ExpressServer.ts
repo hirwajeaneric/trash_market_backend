@@ -2,14 +2,14 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import ErrorHandlerMiddleware from '../middlewares/ErrorHandler';
 import userRouter from '../routes/user.routes';
-import bodyParser, { json } from 'body-parser';
+import bodyParser from 'body-parser';
 import path from 'path';
 import productRouter from '../routes/product.routes';
 
 export default async (app: Application) => {
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
-    // app.use(express.json());
+    // app.use(bodyParser.json());
+    // app.use(bodyParser.urlencoded({ extended: true }));
+    app.use(express.json());
     app.use('/images', express.static(path.join(__dirname, 'images')));
     
     app.use(cors({

@@ -7,22 +7,17 @@ const productRouter = express.Router();
 
 const imageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './images');
+        cb(null, './src/images');
     },
     filename: (req, file, cb) => {
-        cb(null, new Date().toISOString()+'_'+file.originalname);
+        cb(null, new Date().toISOString() + '_' + file.originalname);
+        console.log(req.files);
     }
-})
+});
 
-const images = multer({ storage: imageStorage }).array('images', 5);
+const images = multer({ storage: imageStorage }).array('imageFiles', 5);
 
-const testMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.body);
-    next();
-};
-
-
-productRouter.post('/add', testMiddleware, validateAddProduct, images, addNew);
+productRouter.post('/add',images, validateAddProduct, addNew);
 productRouter.get('/list', list);
 productRouter.put('/update', images, update);
 

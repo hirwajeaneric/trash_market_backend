@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 
 const handleValidationErrors = async (req: Request, res: Response, next: NextFunction) => {
-    const errors = validationResult(req);
+  const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array()[0].msg });
-    }
-    next();
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array()[0].msg });
+  }
+  next();
 };
 
 export const validateAddProduct = [
@@ -18,6 +18,7 @@ export const validateAddProduct = [
     .isLength({ min: 3 })
     .withMessage('Product name must be at least 3 characters long'),
   body('description')
+    .not()
     .isEmpty()
     .withMessage('Product description is required')
     .isLength({ min: 10 })
@@ -27,14 +28,14 @@ export const validateAddProduct = [
     .withMessage('Product quantity must be a valid integer')
     .isInt({ min: 1 })
     .withMessage('Product quantity must be at least 1'),
-  body('seller').isMongoId().withMessage('Invalid seller ID'), // Assuming seller is a valid MongoDB Object ID
-  body('client').optional().isMongoId().withMessage('Invalid client ID'), // Assuming client is a valid MongoDB Object ID (optional)
   body('unitprice')
+    .not()
     .isNumeric()
     .withMessage('Product unit price must be a valid number'),
   body('addressLine1')
-    .isString()
-    .withMessage('Product address line 1 must be a string')
+    .not()
+    .isEmpty()
+    .withMessage('Product address line 1 must be provided')
     .isLength({ min: 3 })
     .withMessage('Product address line 1 must be at least 3 characters long'),
   body('addressLine2') // Assuming addressLine2 is required or optional based on your logic
@@ -43,8 +44,60 @@ export const validateAddProduct = [
     .withMessage('Product address line 2 must be a string')
     .isLength({ min: 3 })
     .withMessage('Product address line 2 must be at least 3 characters long'),
-  body('verified').isBoolean().withMessage('Product verified status must be true or false'),
-  body('paid').isBoolean().withMessage('Product paid status must be true or false'),
+  body('type')
+    .isIn([
+      'Home Appliance',
+      'Clothing',
+      'Shoes',
+      'Furniture',
+      'Electronics',
+      'Phone',
+      'Computer',
+      'Part of house',
+      'Cereals',
+      'Other food items',
+    ])
+    .withMessage('Invalid product type'),
+  body('category')
+    .isIn(['Renewable', 'Non-renewable'])
+    .withMessage('Invalid product category'),
+  handleValidationErrors
+];
+
+export const validateUpdateProduct = [
+  body('name')
+    .not()
+    .isEmpty()
+    .withMessage('Product name is required')
+    .isLength({ min: 3 })
+    .withMessage('Product name must be at least 3 characters long'),
+  body('description')
+    .not()
+    .isEmpty()
+    .withMessage('Product description is required')
+    .isLength({ min: 10 })
+    .withMessage('Product description must be at least 10 characters long'),
+  body('quantity')
+    .isInt() // Assuming quantity is a whole number
+    .withMessage('Product quantity must be a valid integer')
+    .isInt({ min: 1 })
+    .withMessage('Product quantity must be at least 1'),
+  body('unitprice')
+    .not()
+    .isNumeric()
+    .withMessage('Product unit price must be a valid number'),
+  body('addressLine1')
+    .not()
+    .isEmpty()
+    .withMessage('Product address line 1 must be provided')
+    .isLength({ min: 3 })
+    .withMessage('Product address line 1 must be at least 3 characters long'),
+  body('addressLine2') // Assuming addressLine2 is required or optional based on your logic
+    .optional()
+    .isString()
+    .withMessage('Product address line 2 must be a string')
+    .isLength({ min: 3 })
+    .withMessage('Product address line 2 must be at least 3 characters long'),
   body('deliveryStatus.client')
     .isIn(['Pending', 'Received'])
     .withMessage('Invalid delivery status for client'),
@@ -68,7 +121,7 @@ export const validateAddProduct = [
   body('category')
     .isIn(['Renewable', 'Non-renewable'])
     .withMessage('Invalid product category'),
-    handleValidationErrors
+  handleValidationErrors
 ];
 
 // export const imageValidation = [
