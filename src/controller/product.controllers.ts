@@ -53,7 +53,7 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
     var images: string[] = [];
 
     // Handle image updates (if applicable)
-    if (req.files) {
+    if (req.files?.length !== 0) {
         const newImageFiles = (req.files as Express.Multer.File[]).map((file) => file.filename);
         // Check if existing imageFiles property exists
         if (productToUpdate.imageFiles) {
@@ -64,9 +64,10 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
         }
         images = productToUpdate.imageFiles;
     } else {
+        console.log("Executed");
+        console.log(req.body.imageFiles);
         images = req.body.imageFiles;
     }
-
 
     // Save the updated product
     const updatedProduct = await ProductModel.findByIdAndUpdate(id, {
