@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import multer from 'multer';
 import { addNew, deleteProduct, getAllAvailableProducts, getBoughtProducts, getProductById, getUserProducts, list, update } from "../controller";
 import { validateAddProduct } from "../utils/productValidation";
@@ -11,7 +11,6 @@ const imageStorage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
         cb(null, new Date().toISOString() + '_' + file.originalname);
-        console.log(req.files);
     }
 });
 

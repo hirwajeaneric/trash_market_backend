@@ -50,26 +50,36 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
         return res.status(404).json({ message: "Product not found" });
     }
 
-    // Update product details (if provided in request body)
-    const updates = req.body; // Assuming product details are in the request body
-    Object.assign(productToUpdate, updates);
+    var images: string[] = [];
 
     // Handle image updates (if applicable)
     if (req.files) {
         const newImageFiles = (req.files as Express.Multer.File[]).map((file) => file.filename);
-
         // Check if existing imageFiles property exists
         if (productToUpdate.imageFiles) {
-            // Concatenate new images with existing ones
             productToUpdate.imageFiles = productToUpdate.imageFiles.concat(newImageFiles);
         } else {
             // Assign new images if no existing imageFiles property
             productToUpdate.imageFiles = newImageFiles;
         }
+        images = productToUpdate.imageFiles;
+    } else {
+        images = req.body.imageFiles;
     }
 
+
     // Save the updated product
-    const updatedProduct = await productToUpdate.save();
+    const updatedProduct = await ProductModel.findByIdAndUpdate(id, {
+        name: req.body.name,
+        description: req.body.description,
+        quantity: req.body.quantity,
+        unityPrice: req.body.unityPrice,
+        addressLine1: req.body.addressLine1,
+        addressLine2: req.body.addressLine2,
+        type: req.body.type,
+        category: req.body.category,
+        imageFiles: images,
+    });
 
     if (updatedProduct) {
         res.status(200).json({ message: "Product updated successfully", product: updatedProduct });
