@@ -78,28 +78,24 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
 
 export const addItemToCart = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.query; // Assuming product ID comes from the request URL
-    // console.log(req.query);
-
-    req.body = { client: req.user?._id };
 
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     }
 
-    const productToUpdate = await ProductModel.findById(id);
-
-    if (!productToUpdate) {
-        return res.status(404).json({ message: "Product not found" });
+    req.body = { client: req.user?._id };
+    
+    const updatedProduct = await ProductModel.findByIdAndUpdate(id, req.body, { new: true });
+    
+    if (!updatedProduct) {
+        return res.status(404).json({ message: "Adding to cart failed, Product not found" });
     }
 
-    // Save the updated product
-    const updatedProduct = await ProductModel.findByIdAndUpdate(id, req.body, { new: true });
-
     if (updatedProduct) {
-        res.status(200).json({ message: "Product updated successfully", product: updatedProduct });
+        res.status(200).json({ message: "Product added to cart" });
     } else {
-        res.status(500).json({ message: "Error updating product" });
+        res.status(500).json({ message: "Error adding product to cart" });
     }
 });
 
