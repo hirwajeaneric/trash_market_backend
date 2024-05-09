@@ -18,7 +18,7 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
         images.forEach((image) => {
             req.body.imageFiles.push(image);
         });
-    }
+    };
 
     const newProduct = await ProductModel.create(req.body);
 
@@ -34,53 +34,67 @@ export const list = asyncWrapper(async (req: Request, res: Response, next: NextF
     res.status(200).json({ products });
 });
 
+/**
+ * Updates a product by its ID.
+ *
+ * @param req - The Express.js request object.
+ * @param res - The Express.js response object.
+ * @param next - The Express.js next middleware function.
+ * @returns - A JSON response with the updated product or an error message.
+ */
 export const update = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.query; // Assuming product ID comes from the request URL
+    // console.log(req.query);
 
-    // Validate token
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     }
 
-    // Find the product to update
     const productToUpdate = await ProductModel.findById(id);
-    // Check if product exists
+
     if (!productToUpdate) {
         return res.status(404).json({ message: "Product not found" });
     }
 
-    var images: string[] = [];
+    if (req.files) {
+        req.body.imageFiles = [];
+        const files = req.files as [Express.Multer.File]
+        const images = files.map((file: Express.Multer.File) => file.filename);
+        images.forEach((image) => {
+            req.body.imageFiles.push(image);
+        });
+    };
 
-    // Handle image updates (if applicable)
-    if (req.files?.length !== 0) {
-        const newImageFiles = (req.files as Express.Multer.File[]).map((file) => file.filename);
-        // Check if existing imageFiles property exists
-        if (productToUpdate.imageFiles) {
-            productToUpdate.imageFiles = productToUpdate.imageFiles.concat(newImageFiles);
-        } else {
-            // Assign new images if no existing imageFiles property
-            productToUpdate.imageFiles = newImageFiles;
-        }
-        images = productToUpdate.imageFiles;
+    // Save the updated product
+    const updatedProduct = await ProductModel.findByIdAndUpdate(id, req.body, { new: true });
+
+    if (updatedProduct) {
+        res.status(200).json({ message: "Product updated successfully", product: updatedProduct });
     } else {
-        console.log("Executed");
-        console.log(req.body.imageFiles);
-        images = req.body.imageFiles;
+        res.status(500).json({ message: "Error updating product" });
+    }
+});
+
+export const addItemToCart = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.query; // Assuming product ID comes from the request URL
+    // console.log(req.query);
+
+    req.body = { client: req.user?._id };
+
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    }
+
+    const productToUpdate = await ProductModel.findById(id);
+
+    if (!productToUpdate) {
+        return res.status(404).json({ message: "Product not found" });
     }
 
     // Save the updated product
-    const updatedProduct = await ProductModel.findByIdAndUpdate(id, {
-        name: req.body.name,
-        description: req.body.description,
-        quantity: req.body.quantity,
-        unityPrice: req.body.unityPrice,
-        addressLine1: req.body.addressLine1,
-        addressLine2: req.body.addressLine2,
-        type: req.body.type,
-        category: req.body.category,
-        imageFiles: images,
-    });
+    const updatedProduct = await ProductModel.findByIdAndUpdate(id, req.body, { new: true });
 
     if (updatedProduct) {
         res.status(200).json({ message: "Product updated successfully", product: updatedProduct });
@@ -123,7 +137,8 @@ export const getProductById = asyncWrapper(async (req: Request, res: Response, n
 
 export const getAllAvailableProducts = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     // Filter products where `client` field is null
-    const availableProducts = await ProductModel.find({ client: '' });
+    const products = await ProductModel.find({});
+    const availableProducts = products.filter((product: ProductDoc) => product.client == null);
 
     res.status(200).json({ products: availableProducts });
 });
