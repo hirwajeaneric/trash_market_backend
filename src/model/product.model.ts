@@ -1,9 +1,5 @@
 import { model, Document, Schema } from "mongoose";
 
-type DeliveryStatus = {
-    client: "Pending" | "Recieved",
-    seller: "Pending" | "Delivered",
-}
 export interface ProductDoc extends Document {
     name: string;
     description: string;
@@ -16,7 +12,6 @@ export interface ProductDoc extends Document {
     paid: boolean;
     verified: boolean;
     imageFiles: string[];
-    deliveryStatus: DeliveryStatus;
     type: ['Home Appliance'| 'Clothing' | 'Shoes' | 'Furniture' | 'Electronics' | 'Phone' | 'Computer' | 'Part of house' | 'Cereals' | 'Other food items'];
     category: 'Renewable' | 'Non-renewable';
 };

@@ -85,7 +85,7 @@ export const addItemToCart = asyncWrapper(async (req: Request, res: Response, ne
     }
 
     req.body = { client: req.user?._id };
-    
+
     const updatedProduct = await ProductModel.findByIdAndUpdate(id, req.body, { new: true });
     
     if (!updatedProduct) {
@@ -134,7 +134,7 @@ export const getProductById = asyncWrapper(async (req: Request, res: Response, n
 export const getAllAvailableProducts = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     // Filter products where `client` field is null
     const products = await ProductModel.find({});
-    const availableProducts = products.filter((product: ProductDoc) => product.client == null);
+    const availableProducts = products.filter((product: ProductDoc) => product.paid === false);
 
     res.status(200).json({ products: availableProducts });
 });
