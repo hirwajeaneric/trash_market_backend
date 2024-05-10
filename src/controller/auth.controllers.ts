@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import asyncWrapper from "../middlewares/AsyncWrapper";
 import UserModel from "../model/user.model";
-import { GeneratePassword, GenerateSalt, GenerateToken, ValidatePassword, ValidateToken } from "../utils/password.utils";
+import { GeneratePassword, GenerateSalt, GenerateToken, ValidatePassword, ValidateToken, isTokenValid } from "../utils/password.utils";
 import { GenerateOTP, sendEmail } from "../utils/notification.utils";
 import { Token } from "../model/token.model";
 
@@ -30,7 +30,6 @@ export const signUp = asyncWrapper(async (req: Request, res: Response, next: Nex
     // Send response
     res.status(200).json({ message: "Account created!", user: recordedUser._id });
 });
-
 
 
 export const signIn = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
@@ -65,6 +64,7 @@ export const signIn = asyncWrapper(async (req: Request, res: Response, next: Nex
         .json({ message: "Sign in successful", user: rest, token });
 });
 
+
 export const regenerateOTP = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const foundUser = await UserModel.findById(req.body.id);
     if (!foundUser) {
@@ -86,6 +86,7 @@ export const regenerateOTP = asyncWrapper(async (req: Request, res: Response, ne
     res.status(200).json({ message: "OTP resent!" });
 });
 
+
 export const verifyOTP = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const foundUser = await UserModel.findOne({ otp: req.body.otp });
     
@@ -104,6 +105,7 @@ export const verifyOTP = asyncWrapper(async (req: Request, res: Response, next: 
         return res.status(200).json({ message: "User account verified!" });
     }
 });
+
 
 export const forgotPassword = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const foundUser = await UserModel.findOne({ email: req.body.email });
@@ -151,6 +153,7 @@ export const resetPassword = asyncWrapper(async (req: Request, res: Response, ne
     res.status(200).json({ message: "Your password has been reset!" });
 });
 
+
 export const updateAccount = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -178,4 +181,13 @@ export const updateAccount = asyncWrapper(async (req: Request, res: Response, ne
     };
 
     res.status(200).json({ message: "Account info updated successfully!", user: updatedUser });
+});
+
+export const verifyToken = asyncWrapper(async(req: Request, res: Response, next: NextFunction) => {
+    const validToken = await isTokenValid(req);
+
+    if (!validToken) {
+        return res.status(400).json({ message: "Access denied" });
+    } 
+    res.status(200).json({ message: "Token is valid" });
 });

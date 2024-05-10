@@ -1,5 +1,5 @@
-import express, { NextFunction, Request, Response} from 'express';
-import { forgotPassword, regenerateOTP, resetPassword, signIn, signUp, updateAccount, verifyOTP } from '../controller';
+import express from 'express';
+import { forgotPassword, regenerateOTP, resetPassword, signIn, signUp, updateAccount, verifyOTP, verifyToken } from '../controller';
 import { validateEmail, validateOTP, validatePasswordReset, validateUpdateUserInfo, validateUserSignIn, validateUserSignUp } from '../utils/userValidation';
 const userRouter = express.Router();
 
@@ -10,6 +10,7 @@ userRouter.post('/regenerateOtp', regenerateOTP);
 userRouter.post('/forgotPassword', validateEmail, forgotPassword);
 userRouter.post('/resetPassword', validatePasswordReset, resetPassword);
 userRouter.put('/update', validateUpdateUserInfo, updateAccount);
+userRouter.get('/validate', verifyToken);
 
 
 export default userRouter;

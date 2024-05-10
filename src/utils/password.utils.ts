@@ -47,7 +47,7 @@ export const ValidatePassword = async (enteredPassword: string, savedPassword: s
  * @returns signature string of text (a jwt token)
  */
 export const GenerateToken = async (payload: UserPayload) => {
-    return jwt.sign(payload, SECRET_KEY as string, { expiresIn: '1d'}) // Other possible time of expiration formats are: 30m, 1h, 1d,...
+    return jwt.sign(payload, SECRET_KEY as string, { expiresIn: 120 }) // Other possible time of expiration formats are: 30m, 1h, 1d,...
 };
 
 /**
@@ -56,17 +56,39 @@ export const GenerateToken = async (payload: UserPayload) => {
  * @param req 
  * @returns true | false
  */
-export const ValidateToken = async(req: Request) => {
+export const ValidateToken = async (req: Request) => {
     const signature = req.get('Authorization');
     if (signature) {
         const payload = jwt.verify(signature.split(' ')[1], SECRET_KEY as string) as UserPayload;
-        req.user = payload;
-        
+
         return true;
     }
 }
 
-export const ValidateAdmin = async(req: Request) => {
+interface DecodedPayload extends UserPayload{
+    _id: string;
+    email: string;
+    verified: boolean;
+    iat: number;
+    exp: number;
+}
+
+export const isTokenValid = async (req: Request) => {
+    const signature = req.get('Authorization');
+    if (signature) {
+        const payload = jwt.verify(signature.split(' ')[1], SECRET_KEY as string) as DecodedPayload;
+        req.user = payload;
+        const now = Date.now() / 1000; // Convert to seconds for consistency
+
+        if (payload.exp < now) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+export const ValidateAdmin = async (req: Request) => {
     const signature = req.get('Authorization');
     if (signature) {
         const payload = jwt.verify(signature.split(' ')[1], SECRET_KEY as string) as UserPayload;
