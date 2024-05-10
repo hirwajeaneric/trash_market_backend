@@ -75,18 +75,18 @@ export const manageOrderProducts = asyncWrapper(async (req: Request, res: Respon
     const updatedOrder = await OrderModel.findByIdAndUpdate(id, req.body, { new: true });
 
     if (!updatedOrder) {
-        return res.status(404).json({ message: "Adding to cart failed, Order not found" });
+        return res.status(404).json({ message: "Adding/removing to cart failed, Order not found" });
     }
 
     if (updatedOrder) {
-        res.status(200).json({ message: "Order added to cart" });
+        res.status(200).json({ message: "Cart updated successfully", order: updatedOrder });
     } else {
         res.status(500).json({ message: "Error adding order to cart" });
     }
 });
 
 
-export const getClientOrders = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const getClientOrder = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     // Validate token
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -97,9 +97,9 @@ export const getClientOrders = asyncWrapper(async (req: Request, res: Response, 
     const userId = req.user?._id;
 
     // Find orders where seller matches the user ID
-    const userOrders = await OrderModel.find({ client: userId });
+    const userOrder = await OrderModel.findOne({ client: userId });
 
-    res.status(200).json({ orders: userOrders });
+    res.status(200).json({ order: userOrder });
 });
 
 export const getSellerOrders = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
