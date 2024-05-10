@@ -2,13 +2,11 @@ import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import ErrorHandlerMiddleware from '../middlewares/ErrorHandler';
 import userRouter from '../routes/user.routes';
-import bodyParser from 'body-parser';
 import path from 'path';
 import productRouter from '../routes/product.routes';
+import orderRouter from '../routes/order.routes';
 
 export default async (app: Application) => {
-    // app.use(bodyParser.json());
-    // app.use(bodyParser.urlencoded({ extended: true }));
     app.use(express.json());
     app.use('/images', express.static(path.join(__dirname, '../images')));
     
@@ -29,6 +27,7 @@ export default async (app: Application) => {
 
     app.use('/api/v1/auth', userRouter);
     app.use('/api/v1/product', productRouter);
+    app.use('/api/v1/order', orderRouter);
 
     app.use(ErrorHandlerMiddleware);
 

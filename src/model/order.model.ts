@@ -1,34 +1,65 @@
 import { model, Document, Schema } from "mongoose";
 
 type DeliveryStatus = {
-    client: "Pending" | "Recieved",
-    seller: "Pending" | "Delivered",
+    client: "Pending" | "Recieved";
+    seller: "Pending" | "Delivered";
+}
+
+export type ProductTypes = {
+    id: Schema.Types.ObjectId;
+    quantity: Number;
+    pricePerUnit: Number;
 }
 
 export interface OrderDoc extends Document {
-    products: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'Order',
-            required: true
-        }
-    ];
+    client: Schema.Types.ObjectId;
+    seller: Schema.Types.ObjectId;
+    products: ProductTypes[];
+    totalPrice: Number;
     paid: boolean;
     status: ['Pending' | 'In Progress' | 'Completed'];
     deliveryStatus: DeliveryStatus;
 };
 
 const OrderSchema = new Schema({
+    client: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
+    seller: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     products: [
         {
-            type: Schema.Types.ObjectId,
-            ref: 'Order',
-            required: true
+            id: {
+                type: Schema.Types.ObjectId,
+                ref: 'Order',
+                required: true
+            },
+            quantity: {
+                type: Number,
+                required: true
+            },
+            pricePerUnit: {
+                type: Number,
+                required: true
+            }
         }
     ],
-    paid: { type: Boolean, required: true, default: false },
+    totalPrice: {
+        type: Number,
+        required: true
+    },
+    paid: { 
+        type: Boolean, 
+        required: true, 
+        default: false 
+    },
     deliveryStatus: {
-        client: { 
+        client: {
             type: String,
             required: true,
             enum: {
@@ -37,7 +68,7 @@ const OrderSchema = new Schema({
             },
             default: 'Pending'
         },
-        seller: { 
+        seller: {
             type: String,
             required: true,
             enum: {
@@ -47,7 +78,7 @@ const OrderSchema = new Schema({
             default: 'Pending'
         }
     }
-},{
+}, {
     toJSON: {
         transform: (doc, ret) => {
             ret.id = ret._id;

@@ -1,6 +1,6 @@
 import express from "express";
 import multer from 'multer';
-import { addItemToCart, addNew, deleteProduct, getAllAvailableProducts, getBoughtProducts, getProductById, getUserProducts, list, update } from "../controller";
+import { addItemToCart, addNew, deleteProduct, getAllAvailableProducts, getBoughtProducts, getProductById, getUserProducts, list, update } from "../controller/product.controllers";
 import { validateAddProduct } from "../utils/productValidation";
 
 const productRouter = express.Router();

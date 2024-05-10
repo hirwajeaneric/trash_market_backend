@@ -11,8 +11,6 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
 
     const newOrder = await OrderModel.create(req.body);
 
-    // Update all products with the same order
-
     if (newOrder) {
         res.status(201).json({ message: "Order added successfully", order: newOrder });
     };
@@ -20,21 +18,18 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
 
 
 export const list = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    }
+
     const orders = await OrderModel.find({});
     res.status(200).json({ orders });
 });
 
-/**
- * Updates a order by its ID.
- *
- * @param req - The Express.js request object.
- * @param res - The Express.js response object.
- * @param next - The Express.js next middleware function.
- * @returns - A JSON response with the updated order or an error message.
- */
+
 export const update = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.query; // Assuming order ID comes from the request URL
-    // console.log(req.query);
 
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -47,15 +42,6 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
         return res.status(404).json({ message: "Order not found" });
     }
 
-    if (req.files) {
-        req.body.imageFiles = [];
-        const files = req.files as [Express.Multer.File]
-        const images = files.map((file: Express.Multer.File) => file.filename);
-        images.forEach((image) => {
-            req.body.imageFiles.push(image);
-        });
-    };
-
     // Save the updated order
     const updatedOrder = await OrderModel.findByIdAndUpdate(id, req.body, { new: true });
 
@@ -66,18 +52,28 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
     }
 });
 
-export const addItemToOrder = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const manageOrderProducts = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.query; // Assuming order ID comes from the request URL
+    const { product } = req.body;
 
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     }
 
-    req.body = { client: req.user?._id };
+    const existingOrder = await OrderModel.findById(id);
+    const products = existingOrder?.products;
+
+    products?.forEach((productInOrder) => {
+        if (productInOrder.id === product.id) {
+            productInOrder = product;
+        }
+    });
+
+    req.body.products = products;
 
     const updatedOrder = await OrderModel.findByIdAndUpdate(id, req.body, { new: true });
-    
+
     if (!updatedOrder) {
         return res.status(404).json({ message: "Adding to cart failed, Order not found" });
     }
@@ -90,7 +86,23 @@ export const addItemToOrder = asyncWrapper(async (req: Request, res: Response, n
 });
 
 
-export const getUserOrders = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+export const getClientOrders = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    // Validate token
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    }
+
+    // Get user ID from the request (e.g., from req.user)
+    const userId = req.user?._id;
+
+    // Find orders where seller matches the user ID
+    const userOrders = await OrderModel.find({ client: userId });
+
+    res.status(200).json({ orders: userOrders });
+});
+
+export const getSellerOrders = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     // Validate token
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -110,6 +122,10 @@ export const getUserOrders = asyncWrapper(async (req: Request, res: Response, ne
 export const getOrderById = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.query; // Assuming order ID comes from the request URL
 
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    }
     // Find the order by ID
     const order = await OrderModel.findById(id);
 
