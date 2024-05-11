@@ -21,7 +21,7 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
     if (existingOrder) {
         const product = await ProductModel.findById(req.body.products[0].id);
         existingOrder.products.forEach((p) => {
-            if (p.id.toString() === req.body.products[0].id) {
+            if (p.id.toString() === req.body.products[0].id && existingOrder.paid === false) {
                 if (p.quantity === product?.quantity) {
                     return res.status(400).json({ message: "Product quantity limit achieved" });
                 } else {
@@ -196,7 +196,7 @@ export const getSellerOrders = asyncWrapper(async (req: Request, res: Response, 
     const userId = req.user?._id;
 
     // Find orders where seller matches the user ID
-    const userOrders = await OrderModel.find({ seller: userId });
+    const userOrders = await OrderModel.find({ seller: userId }).populate("User");
 
     res.status(200).json({ orders: userOrders });
 });
