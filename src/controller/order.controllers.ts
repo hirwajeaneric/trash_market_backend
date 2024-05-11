@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import asyncWrapper from "../middlewares/AsyncWrapper";
-import { Order as OrderModel, OrderDoc } from "../model/order.model";
+import { Order as OrderModel, OrderDoc, ProductTypes } from "../model/order.model";
 import { ValidateToken } from "../utils/password.utils";
+import { Product as ProductModel, ProductDoc } from "../model/product.model";
 
 
 export const testRequest = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
@@ -15,15 +16,37 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
         return res.status(400).json({ message: "Access denied" });
     };
 
-    console.log(req.body.products[0].quantity);
-    console.log(req.body.products[0].pricePerUnit);
-    req.body.totalPrice = req.body.products[0].quantity * req.body.products[0].pricePerUnit;
+    const existingOrder = await OrderModel.findOne({ client: req.body.client });
 
-    const newOrder = await OrderModel.create(req.body);
-
-    if (newOrder) {
-        res.status(201).json({ message: "Order added successfully", order: newOrder });
-    };
+    if (existingOrder) {
+        const product = await ProductModel.findById(req.body.products[0].id);
+        existingOrder.products.forEach((p) => { 
+            if (p.id.toString() === req.body.products[0].id) {
+                if (p.quantity === product?.quantity) {
+                    return res.status(400).json({ message: "Product quantity limit achieved" });
+                } else {
+                    p.quantity++;    
+                    let totalPrice = 0;
+                    existingOrder.products.forEach(product => {
+                        totalPrice = totalPrice + (product.pricePerUnit * product.quantity);
+                    });
+                    existingOrder.totalPrice = totalPrice;  
+                }
+            } else {
+                return res.status(400).json({ message: "You already have a product in the cart, please pay the first product and try again." });
+            }
+        });
+        const updatedOrder = await existingOrder.save();
+        if (updatedOrder) {
+            res.status(201).json({ message: "Cart updated successfully", order:updatedOrder });
+        };
+    } else {
+        req.body.totalPrice = req.body.products[0].quantity * req.body.products[0].pricePerUnit;
+        const newOrder = await OrderModel.create(req.body);
+        if (newOrder) {
+            res.status(201).json({ message: "Order added successfully", order: newOrder });
+        };
+    }
 });
 
 

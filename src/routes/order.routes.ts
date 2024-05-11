@@ -12,7 +12,7 @@ import {
 
 const orderRouter = express.Router();
 
-orderRouter.post('/add', testRequest, addNew);
+orderRouter.post('/add', addNew);
 orderRouter.get('/list', list);
 orderRouter.put('/update', update);
 orderRouter.put('/updateCart', manageOrderProducts);

@@ -19,10 +19,10 @@ export interface ProductDoc extends Document {
 const ProductSchema = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
-    quantity: { type: String, required: true },
+    quantity: { type: Number, required: true },
     seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     client: { type: Schema.Types.ObjectId, ref: 'User', required: false },
-    unitPrice: { type: String, required: true },
+    unitPrice: { type: Number, required: true },
     addressLine1: { type: String, required: true },
     addressLine2: { type: String, required: true },
     verified: { type: Boolean, required: true, default: false },

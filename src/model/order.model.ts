@@ -7,8 +7,8 @@ type DeliveryStatus = {
 
 export type ProductTypes = {
     id: Schema.Types.ObjectId;
-    quantity: Number;
-    pricePerUnit: Number;
+    quantity: number;
+    pricePerUnit: number;
 }
 
 export interface OrderDoc extends Document {
