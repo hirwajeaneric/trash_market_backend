@@ -3,11 +3,21 @@ import asyncWrapper from "../middlewares/AsyncWrapper";
 import { Order as OrderModel, OrderDoc } from "../model/order.model";
 import { ValidateToken } from "../utils/password.utils";
 
+
+export const testRequest = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body);
+    next();
+});
+
 export const addNew = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     };
+
+    console.log(req.body.products[0].quantity);
+    console.log(req.body.products[0].pricePerUnit);
+    req.body.totalPrice = req.body.products[0].quantity * req.body.products[0].pricePerUnit;
 
     const newOrder = await OrderModel.create(req.body);
 
@@ -54,35 +64,42 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
 
 export const manageOrderProducts = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.query; // Assuming order ID comes from the request URL
-    const { product } = req.body;
-
+    
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     }
 
     const existingOrder = await OrderModel.findById(id);
-    const products = existingOrder?.products;
+    
+    if (existingOrder) {
+        const products = existingOrder.products;
+    
+        var indexOfProduct = 0;
+        products?.forEach((productInOrder, index) => {
+            if (productInOrder.id.toString() === req.body.id) {
+                console.log(index);
+                indexOfProduct = index;   
+            }
+        });
+    
+        existingOrder.products[indexOfProduct] = req.body;
 
-    products?.forEach((productInOrder) => {
-        if (productInOrder.id === product.id) {
-            productInOrder = product;
+        const updatedOrder = await existingOrder.save();
+
+        console.log(updatedOrder);
+    
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Adding/removing to cart failed, Order not found" });
         }
-    });
-
-    req.body.products = products;
-
-    const updatedOrder = await OrderModel.findByIdAndUpdate(id, req.body, { new: true });
-
-    if (!updatedOrder) {
-        return res.status(404).json({ message: "Adding/removing to cart failed, Order not found" });
+    
+        if (updatedOrder) {
+            res.status(200).json({ message: "Cart updated successfully", order: updatedOrder });
+        } else {
+            res.status(500).json({ message: "Error adding order to cart" });
+        }
     }
 
-    if (updatedOrder) {
-        res.status(200).json({ message: "Cart updated successfully", order: updatedOrder });
-    } else {
-        res.status(500).json({ message: "Error adding order to cart" });
-    }
 });
 
 
@@ -93,12 +110,9 @@ export const getClientOrder = asyncWrapper(async (req: Request, res: Response, n
         return res.status(400).json({ message: "Access denied" });
     }
 
-    // Get user ID from the request (e.g., from req.user)
-    const userId = req.user?._id;
-
     // Find orders where seller matches the user ID
-    const userOrder = await OrderModel.findOne({ client: userId });
-
+    const orders = await OrderModel.find({});
+    const userOrder = orders.find(order => order.client.toString() === req.user?._id);
     res.status(200).json({ order: userOrder });
 });
 
