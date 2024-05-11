@@ -7,7 +7,8 @@ import {
     list, 
     manageOrderProducts, 
     update,
-    testRequest
+    testRequest,
+    deleteOrder
 } from "../controller/order.controllers";
 
 const orderRouter = express.Router();
@@ -19,5 +20,6 @@ orderRouter.put('/updateCart', manageOrderProducts);
 orderRouter.get('/findById', getOrderById);
 orderRouter.get('/client', getClientOrder);
 orderRouter.get('/seller', getSellerOrders);
+orderRouter.delete('/delete', deleteOrder);
 
 export default orderRouter;

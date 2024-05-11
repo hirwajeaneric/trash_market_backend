@@ -28,10 +28,14 @@ export const validateAddProduct = [
     .withMessage('Product quantity must be a valid integer')
     .isInt({ min: 1 })
     .withMessage('Product quantity must be at least 1'),
-  body('unitprice')
+  body('unitPrice')
     .not()
-    .isNumeric()
-    .withMessage('Product unit price must be a valid number'),
+    .isEmpty()
+    .withMessage('Product unit price must provided'),
+  body('deliveryPrice')
+    .not()
+    .isEmpty()
+    .withMessage('Delivery price for this product must be provided'),
   body('addressLine1')
     .not()
     .isEmpty()

@@ -7,13 +7,16 @@ type DeliveryStatus = {
 
 export type ProductTypes = {
     id: Schema.Types.ObjectId;
+    name: string;
     quantity: number;
+    maxQuantity: number;
     pricePerUnit: number;
 }
 
 export interface OrderDoc extends Document {
     client: Schema.Types.ObjectId;
     seller: Schema.Types.ObjectId;
+    deliveryPrice: Number;
     products: ProductTypes[];
     totalPrice: Number;
     paid: boolean;
@@ -32,6 +35,10 @@ const OrderSchema = new Schema({
         ref: 'User',
         required: true,
     },
+    deliveryPrice: {
+        type: Number,
+        required: true,
+    },
     products: [
         {
             id: {
@@ -39,7 +46,15 @@ const OrderSchema = new Schema({
                 ref: 'Order',
                 required: true
             },
+            name: {
+                type: String,
+                required: true
+            },
             quantity: {
+                type: Number,
+                required: true
+            },
+            maxQuantity: {
                 type: Number,
                 required: true
             },

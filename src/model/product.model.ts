@@ -7,6 +7,7 @@ export interface ProductDoc extends Document {
     seller: string;
     client: string;
     unitPrice: number;
+    deliveryPrice: number;
     addressLine1: string;
     addressLine2: string;
     paid: boolean;
@@ -23,6 +24,7 @@ const ProductSchema = new Schema({
     seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     client: { type: Schema.Types.ObjectId, ref: 'User', required: false },
     unitPrice: { type: Number, required: true },
+    deliveryPrice: { type: Number, required: true },
     addressLine1: { type: String, required: true },
     addressLine2: { type: String, required: true },
     verified: { type: Boolean, required: true, default: false },

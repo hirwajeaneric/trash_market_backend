@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import asyncWrapper from "../middlewares/AsyncWrapper";
-import { Order as OrderModel, OrderDoc, ProductTypes } from "../model/order.model";
+import { Order as OrderModel } from "../model/order.model";
 import { ValidateToken } from "../utils/password.utils";
-import { Product as ProductModel, ProductDoc } from "../model/product.model";
+import { Product as ProductModel } from "../model/product.model";
 
 
 export const testRequest = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
@@ -27,8 +27,8 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
                 } else {
                     p.quantity++;    
                     let totalPrice = 0;
-                    existingOrder.products.forEach(product => {
-                        totalPrice = totalPrice + (product.pricePerUnit * product.quantity);
+                    existingOrder.products.forEach(prod => {
+                        totalPrice = totalPrice + (prod.pricePerUnit * prod.quantity) + req.body.deliveryPrice;
                     });
                     existingOrder.totalPrice = totalPrice;  
                 }
@@ -41,7 +41,7 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
             res.status(201).json({ message: "Cart updated successfully", order:updatedOrder });
         };
     } else {
-        req.body.totalPrice = req.body.products[0].quantity * req.body.products[0].pricePerUnit;
+        req.body.totalPrice = req.body.products[0].quantity * req.body.products[0].pricePerUnit + req.body.deliveryPrice;
         const newOrder = await OrderModel.create(req.body);
         if (newOrder) {
             res.status(201).json({ message: "Order added successfully", order: newOrder });
@@ -82,6 +82,27 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
         res.status(200).json({ message: "Order updated successfully", order: updatedOrder });
     } else {
         res.status(500).json({ message: "Error updating order" });
+    }
+});
+
+export const deleteOrder = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.query; // Assuming order ID comes from the request URL
+
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    }
+
+    const deletedOrder = await OrderModel.findByIdAndDelete(id);
+
+    if (!deletedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (deletedOrder) {
+        res.status(200).json({ message: "Order deleted"});
+    } else {
+        res.status(500).json({ message: "Error deleting order" });
     }
 });
 
