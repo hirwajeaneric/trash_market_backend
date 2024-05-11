@@ -8,6 +8,7 @@ type DeliveryStatus = {
 export type ProductTypes = {
     id: Schema.Types.ObjectId;
     name: string;
+    image: string;
     quantity: number;
     maxQuantity: number;
     pricePerUnit: number;
