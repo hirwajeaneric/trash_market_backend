@@ -1,28 +1,5 @@
 import { model, Document, Schema } from "mongoose";
-
-type DeliveryStatus = {
-    client: "Pending" | "Recieved";
-    seller: "Pending" | "Delivered";
-}
-
-export type ProductTypes = {
-    id: Schema.Types.ObjectId;
-    name: string;
-    quantity: number;
-    maxQuantity: number;
-    pricePerUnit: number;
-}
-
-export interface OrderDoc extends Document {
-    client: Schema.Types.ObjectId;
-    seller: Schema.Types.ObjectId;
-    deliveryPrice: Number;
-    products: ProductTypes[];
-    totalPrice: Number;
-    paid: boolean;
-    status: ['Pending' | 'In Progress' | 'Completed'];
-    deliveryStatus: DeliveryStatus;
-};
+import { OrderDoc } from "../dto/order.dto";
 
 const OrderSchema = new Schema({
     client: {
@@ -38,6 +15,18 @@ const OrderSchema = new Schema({
     deliveryPrice: {
         type: Number,
         required: true,
+    },
+    deliveryTime: {
+        type: Number,
+        required: true,
+    },
+    addressLine1: {
+        type: String,
+        required: false,
+    },
+    addressLine2: {
+        type: String,
+        required: false,
     },
     products: [
         {

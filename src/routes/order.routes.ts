@@ -8,7 +8,8 @@ import {
     manageOrderProducts, 
     update,
     testRequest,
-    deleteOrder
+    deleteOrder,
+    getAllClientOrders
 } from "../controller/order.controllers";
 
 const orderRouter = express.Router();
@@ -19,6 +20,7 @@ orderRouter.put('/update', update);
 orderRouter.put('/updateCart', manageOrderProducts);
 orderRouter.get('/findById', getOrderById);
 orderRouter.get('/client', getClientOrder);
+orderRouter.get('/purchases', getAllClientOrders);
 orderRouter.get('/seller', getSellerOrders);
 orderRouter.delete('/delete', deleteOrder);
 

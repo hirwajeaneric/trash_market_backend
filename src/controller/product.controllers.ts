@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import asyncWrapper from "../middlewares/AsyncWrapper";
-import { Product as ProductModel, ProductDoc } from "../model/product.model";
+import { Product as ProductModel } from "../model/product.model";
 import { ValidateToken } from "../utils/password.utils";
+import { ProductDoc } from "../dto/product.dto";
 
 export const addNew = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const isTokenValid = await ValidateToken(req);

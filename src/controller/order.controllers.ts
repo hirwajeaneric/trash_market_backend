@@ -64,6 +64,8 @@ export const list = asyncWrapper(async (req: Request, res: Response, next: NextF
 export const update = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.query; // Assuming order ID comes from the request URL
 
+    console.log(req.body);
+
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
@@ -143,9 +145,7 @@ export const manageOrderProducts = asyncWrapper(async (req: Request, res: Respon
             res.status(500).json({ message: "Error adding order to cart" });
         }
     }
-
 });
-
 
 export const getClientOrder = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     // Validate token
@@ -158,6 +158,19 @@ export const getClientOrder = asyncWrapper(async (req: Request, res: Response, n
     const orders = await OrderModel.find({});
     const userOrder = orders.find(order => order.client.toString() === req.user?._id);
     res.status(200).json({ order: userOrder });
+});
+
+export const getAllClientOrders = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    // Validate token
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    }
+
+    // Find orders where seller matches the user ID
+    const orders = await OrderModel.find({});
+    const userOrders = orders.filter(order => order.client.toString() === req.user?._id && order.paid);
+    res.status(200).json({ orders: userOrders });
 });
 
 export const getSellerOrders = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
