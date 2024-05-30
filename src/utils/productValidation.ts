@@ -12,43 +12,41 @@ const handleValidationErrors = async (req: Request, res: Response, next: NextFun
 
 export const validateAddProduct = [
   body('name')
-    .not()
     .isEmpty()
     .withMessage('Product name is required')
+    .not()
     .isLength({ min: 3 })
     .withMessage('Product name must be at least 3 characters long'),
   body('description')
-    .not()
     .isEmpty()
     .withMessage('Product description is required')
+    .not()
     .isLength({ min: 10 })
     .withMessage('Product description must be at least 10 characters long'),
   body('quantity')
-    .isInt() // Assuming quantity is a whole number
-    .withMessage('Product quantity must be a valid integer')
-    .isInt({ min: 1 })
-    .withMessage('Product quantity must be at least 1'),
+    .isEmpty() // Assuming quantity is a whole number
+    .withMessage('Product quantity must be provided'),
   body('unitPrice')
-    .not()
     .isEmpty()
     .withMessage('Product unit price must provided'),
   body('deliveryPrice')
-    .not()
     .isEmpty()
     .withMessage('Delivery price for this product must be provided'),
   body('addressLine1')
-    .not()
     .isEmpty()
     .withMessage('Product address line 1 must be provided')
+    .not()
     .isLength({ min: 3 })
     .withMessage('Product address line 1 must be at least 3 characters long'),
   body('addressLine2') // Assuming addressLine2 is required or optional based on your logic
     .optional()
     .isString()
     .withMessage('Product address line 2 must be a string')
+    .not()
     .isLength({ min: 3 })
     .withMessage('Product address line 2 must be at least 3 characters long'),
   body('type')
+    .not()
     .isIn([
       'Home Appliance',
       'Clothing',
@@ -63,6 +61,7 @@ export const validateAddProduct = [
     ])
     .withMessage('Invalid product type'),
   body('category')
+    .not()
     .isIn(['Renewable', 'Non-renewable'])
     .withMessage('Invalid product category'),
   handleValidationErrors

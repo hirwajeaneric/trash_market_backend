@@ -6,20 +6,12 @@ import { ProductDoc } from "../dto/product.dto";
 
 export const addNew = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const isTokenValid = await ValidateToken(req);
+    console.log(req.body);
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     };
 
     req.body.seller = req.user?._id;
-
-    if (req.files) {
-        req.body.imageFiles = [];
-        const files = req.files as [Express.Multer.File]
-        const images = files.map((file: Express.Multer.File) => file.filename);
-        images.forEach((image) => {
-            req.body.imageFiles.push(image);
-        });
-    };
 
     const newProduct = await ProductModel.create(req.body);
 
