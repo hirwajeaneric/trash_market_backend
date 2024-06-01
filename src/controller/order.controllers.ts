@@ -17,11 +17,12 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
     };
 
     const existingOrder = await OrderModel.findOne({ client: req.body.client });
+    const productId = req.body.products[0].id;
 
-    if (existingOrder && existingOrder.paid === false) {
-        const product = await ProductModel.findById(req.body.products[0].id);
+    if (existingOrder) {
+        const product = await ProductModel.findById(productId);
         existingOrder.products.forEach((p) => {
-            if (p.id.toString() === req.body.products[0].id) {
+            if (p.id.toString() === productId) {
                 if (p.quantity === product?.quantity) {
                     return res.status(400).json({ message: "Product quantity limit achieved" });
                 } else {
@@ -68,6 +69,12 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     }
+    const productId = req.body.products[0].id;
+
+    const isProductStillAvailable = await ProductModel.findById(productId);
+    if (!isProductStillAvailable) {
+        return res.status(404).json({ message: "The product you are trying to order is no longer available" });
+    };
 
     const orderToUpdate = await OrderModel.findById(id);
 
