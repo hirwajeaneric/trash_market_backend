@@ -70,11 +70,11 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     }
-    
+
 
     if (req.body.products) {
         const productId = req.body.products[0].id;
-        
+
         const isProductStillAvailable = await ProductModel.findById(productId);
         if (!isProductStillAvailable) {
             return res.status(404).json({ message: "The product you are trying to order is no longer available" });
@@ -179,6 +179,7 @@ export const updateOrderStatus = asyncWrapper(async (req: Request, res: Response
     const existingOrder = await OrderModel.findById(id);
 
     if (existingOrder) {
+        // existingOrde
         existingOrder.paid = true;
         const updatedOrder = await existingOrder.save();
         if (!updatedOrder) {
@@ -226,10 +227,11 @@ export const getSellerOrders = asyncWrapper(async (req: Request, res: Response, 
 
     // Find orders where seller matches the user ID
     const userOrders = await OrderModel.find({ seller: userId, paid: true })
-    .populate({
-        path: "client",
-        model: "User"
-    });
+        .populate({
+            path: "client",
+            model: "User",
+            select: ['_id', 'firstName', 'lastName', 'email', 'phone'],
+        });
 
     res.status(200).json({ orders: userOrders });
 });
@@ -243,7 +245,12 @@ export const getOrderById = asyncWrapper(async (req: Request, res: Response, nex
         return res.status(400).json({ message: "Access denied" });
     }
     // Find the order by ID
-    const order = await OrderModel.findById(id);
+    const order = await OrderModel.findById(id)
+        .populate({
+            path: "client",
+            model: "User",
+            select: ['_id', 'firstName', 'lastName', 'email', 'phone'],
+        });
 
     if (order) {
         res.status(200).json({ order });
