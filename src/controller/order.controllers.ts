@@ -196,7 +196,7 @@ export const getClientOrder = asyncWrapper(async (req: Request, res: Response, n
     }
 
     // Find orders where seller matches the user ID
-    const orders = await OrderModel.find({});
+    const orders = await OrderModel.find({ paid: false });
     const userOrder = orders.find(order => order.client.toString() === req.user?._id && !order.paid);
     res.status(200).json({ order: userOrder });
 });
@@ -225,7 +225,7 @@ export const getSellerOrders = asyncWrapper(async (req: Request, res: Response, 
     const userId = req.user?._id;
 
     // Find orders where seller matches the user ID
-    const userOrders = await OrderModel.find({ seller: userId })
+    const userOrders = await OrderModel.find({ seller: userId, paid: true })
     .populate({
         path: "client",
         model: "User"
