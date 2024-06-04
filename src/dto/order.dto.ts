@@ -24,6 +24,5 @@ export interface OrderDoc extends Document {
     products: ProductTypes[];
     totalPrice: Number;
     paid: boolean;
-    status: ['Pending' | 'In Progress' | 'Completed'];
     deliveryStatus: DeliveryStatus;
 };

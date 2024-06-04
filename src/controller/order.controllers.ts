@@ -6,6 +6,7 @@ import { Product as ProductModel } from "../model/product.model";
 
 
 export const testRequest = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.query);
     console.log(req.body);
     next();
 });
@@ -69,12 +70,16 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
     if (!isTokenValid) {
         return res.status(400).json({ message: "Access denied" });
     }
-    const productId = req.body.products[0].id;
+    
 
-    const isProductStillAvailable = await ProductModel.findById(productId);
-    if (!isProductStillAvailable) {
-        return res.status(404).json({ message: "The product you are trying to order is no longer available" });
-    };
+    if (req.body.products) {
+        const productId = req.body.products[0].id;
+        
+        const isProductStillAvailable = await ProductModel.findById(productId);
+        if (!isProductStillAvailable) {
+            return res.status(404).json({ message: "The product you are trying to order is no longer available" });
+        };
+    }
 
     const orderToUpdate = await OrderModel.findById(id);
 
@@ -143,7 +148,6 @@ export const manageOrderProducts = asyncWrapper(async (req: Request, res: Respon
         var indexOfProduct = 0;
         products?.forEach((productInOrder, index) => {
             if (productInOrder.id.toString() === req.body.id) {
-                console.log(index);
                 indexOfProduct = index;
             }
         });
@@ -151,8 +155,6 @@ export const manageOrderProducts = asyncWrapper(async (req: Request, res: Respon
         existingOrder.products[indexOfProduct] = req.body;
 
         const updatedOrder = await existingOrder.save();
-
-        console.log(updatedOrder);
 
         if (!updatedOrder) {
             return res.status(404).json({ message: "Adding/removing to cart failed, Order not found" });
@@ -163,6 +165,26 @@ export const manageOrderProducts = asyncWrapper(async (req: Request, res: Respon
         } else {
             res.status(500).json({ message: "Error adding order to cart" });
         }
+    }
+});
+
+export const updateOrderStatus = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.query; // Assuming order ID comes from the request URL
+
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    }
+
+    const existingOrder = await OrderModel.findById(id);
+
+    if (existingOrder) {
+        existingOrder.paid = true;
+        const updatedOrder = await existingOrder.save();
+        if (!updatedOrder) {
+            return res.status(404).json({ message: "Adding/removing to cart failed, Order not found" });
+        }
+        res.status(200).json({ message: "Cart updated successfully", order: updatedOrder });
     }
 });
 
