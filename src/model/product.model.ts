@@ -7,20 +7,20 @@ const ProductSchema = new Schema({
     quantity: { type: Number, required: true },
     seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     client: { type: Schema.Types.ObjectId, ref: 'User', required: false },
-    unitPrice: { type: Number, required: true },
-    deliveryTime: { type: Number, required: true },
-    deliveryPrice: { type: Number, required: true },
+    unitPrice: { type: Number, required: false },
+    deliveryTime: { type: Number, required: false },
+    deliveryPrice: { type: Number, required: false },
     sellerPhone: { type: String, required: true },
     sellerName: { type: String, required: true },
     addressLine1: { type: String, required: true },
-    addressLine2: { type: String, required: true },
+    addressLine2: { type: String, required: false },
     verified: { type: Boolean, required: true, default: false },
-    imageFiles: { type: [String], required: true },
+    imageFiles: { type: [String], required: false },
     paid: { type: Boolean, required: true, default: false },
     deliveryStatus: {
         client: { 
             type: String,
-            required: true,
+            required: false,
             enum: {
                 values: ['Pending', 'Recieved'],
                 message: "Invalid delivery status"
@@ -29,7 +29,7 @@ const ProductSchema = new Schema({
         },
         seller: { 
             type: String,
-            required: true,
+            required: false,
             enum: {
                 values: ['Pending', 'Delivered'],
                 message: "Invalid delivery status"
