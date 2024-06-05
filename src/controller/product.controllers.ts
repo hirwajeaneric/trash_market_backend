@@ -22,6 +22,11 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
 
 
 export const list = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    };
+
     const products = await ProductModel.find({});
     res.status(200).json({ products });
 });
@@ -91,6 +96,10 @@ export const getProductById = asyncWrapper(async (req: Request, res: Response, n
 
 
 export const getAllAvailableProducts = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    };
     // Filter products where `client` field is null
     const products = await ProductModel.find({});
     const availableProducts = products.filter((product: ProductDoc) => product.paid === false);

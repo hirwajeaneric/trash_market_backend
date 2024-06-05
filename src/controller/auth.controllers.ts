@@ -87,6 +87,18 @@ export const regenerateOTP = asyncWrapper(async (req: Request, res: Response, ne
 });
 
 
+export const listUsers = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    };
+
+    const users = await UserModel.find({});
+    // Send response
+    res.status(200).json({ users });
+});
+
+
 export const verifyOTP = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const foundUser = await UserModel.findOne({ otp: req.body.otp });
     
