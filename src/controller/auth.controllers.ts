@@ -23,9 +23,16 @@ export const signUp = asyncWrapper(async (req: Request, res: Response, next: Nex
     // Record account
     const recordedUser = await UserModel.create(req.body);
 
+    var message = '';
+    if (recordedUser.role === 'admin') {
+        message = `Hello ${recordedUser.lastName},\n\nYour OTP is ${otp}. \n\nClick on the link bellow to validate your account: \n${process.env.CLIENT_URL}/admin/verify-account?id=${recordedUser._id}.\n\nBest regards,\n\nTrashMark`;
+    } else {
+        message = `Hello ${recordedUser.lastName},\n\nYour OTP is ${otp}. \n\nClick on the link bellow to validate your account: \n${process.env.CLIENT_URL}/verify-account?id=${recordedUser._id}.\n\nBest regards,\n\nTrashMark`;
+    }
+    
     // Send email
     if (recordedUser) {
-        await sendEmail(req.body.email, "Verify your account", `Hello ${recordedUser.lastName},\n\nYour OTP is ${otp}. \n\nClick on the link bellow to validate your account: \n${process.env.CLIENT_URL}/verify-account?id=${recordedUser._id}.\n\nBest regards,\n\nTrashMark`);
+        await sendEmail(req.body.email, "Verify your account", message);
     }
     // Send response
     res.status(200).json({ message: "Account created!", user: recordedUser._id });
@@ -80,7 +87,7 @@ export const regenerateOTP = asyncWrapper(async (req: Request, res: Response, ne
     await foundUser.save();
 
     // Send email
-    await sendEmail(foundUser.email, "Verify your account", `Hello ${foundUser.lastName},\n\nYour OTP is ${otp}. \n\nClick on the link bellow to validate your account: \n${process.env.CLIENT_URL}/verify-account?id=${foundUser._id}\n\nBest regards,\n\nTrashMark`);
+    await sendEmail(foundUser.email, "Verify your account", `Hello ${foundUser.lastName},\n\nYour OTP is ${otp}. \n\nBest regards,\n\nTrashMark`);
     
     // Send response
     res.status(200).json({ message: "OTP resent!" });
@@ -137,7 +144,13 @@ export const forgotPassword = asyncWrapper(async (req: Request, res: Response, n
         expirationDate: new Date().getTime() + (60 * 1000 * 5),
     });
 
-    const link = `${process.env.CLIENT_URL}/reset-password?token=${token}&id=${foundUser._id}`
+    var link = '';
+    if (foundUser.role === "admin") {
+        link = `${process.env.CLIENT_URL}/admin/reset-password?token=${token}&id=${foundUser._id}`
+    } else {
+        link = `${process.env.CLIENT_URL}/reset-password?token=${token}&id=${foundUser._id}`
+    }
+
     const emailBody = `Hello ${foundUser.lastName},\n\nClick on the link bellow to reset your password.\n\n${link}\n\nBest regards,\n\nTrashMark`;
 
     await sendEmail(foundUser.email, "Reset your password", emailBody);
