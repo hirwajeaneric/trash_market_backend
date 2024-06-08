@@ -41,7 +41,7 @@ const ProductSchema = new Schema({
         type: String,
         required: true,
         enum: {
-            values: ['Home Appliance', 'Clothing', 'Shoes', 'Furniture', 'Electronics', 'Phone', 'Computer', 'Part of house', 'Cereals', 'Other food items'],
+            values: ['Home Appliance', 'Clothing', 'Shoes', 'Furniture', 'Electronics', 'Office appliances', 'Automobile', 'Phone', 'Computer', 'Part of house', 'Cereals', 'Other food items'],
             message: "Invalid product type"
         },
         default: 'Home Appliance'

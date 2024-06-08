@@ -14,6 +14,6 @@ export interface ProductDoc extends Document {
     paid: boolean;
     verified: boolean;
     imageFiles: string[];
-    type: ['Home Appliance'| 'Clothing' | 'Shoes' | 'Furniture' | 'Electronics' | 'Phone' | 'Computer' | 'Part of house' | 'Cereals' | 'Other food items'];
+    type: ['Home Appliance'| 'Clothing' | 'Shoes' | 'Automobile' | 'Office appliances' | 'Furniture' | 'Electronics' | 'Phone' | 'Computer' | 'Part of house' | 'Cereals' | 'Other food items'];
     category: 'Renewable' | 'Non-renewable';
 };
