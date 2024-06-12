@@ -3,7 +3,7 @@ import { ProductDoc } from "../dto/product.dto";
 
 const ProductSchema = new Schema({
     name: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String, required: false },
     quantity: { type: Number, required: true },
     seller: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     client: { type: Schema.Types.ObjectId, ref: 'User', required: false },

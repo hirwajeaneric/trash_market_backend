@@ -12,6 +12,11 @@ const ErrorHandlerMiddleware = ( err: CustomError, req: Request, res: Response, 
   let errStatus: number = err.statusCode || 500;
   let errMessage: string = err.message || "Internal Server Error";
 
+  if (err.name === 'TokenExpiredError') {
+    errMessage = "Token expired, please login again";
+    errStatus = 401;
+  }
+
   if (err.name === "ValidationError") {
     const errorMessages = err.details?.map((detail) => detail.message); // Use optional chaining
     if (errorMessages) { // Check if messages exist before joining
@@ -31,9 +36,9 @@ const ErrorHandlerMiddleware = ( err: CustomError, req: Request, res: Response, 
     errStatus = 404;
   }
 
-  console.log(errMessage);
+  // console.log(errMessage);
 
-  res.status(errStatus).json({
+  return res.status(errStatus).json({
     success: false,
     status: errStatus,
     message: errMessage,
