@@ -10,6 +10,7 @@ export interface ProductDoc extends Document {
     deliveryTime: number;
     deliveryPrice: number;
     addressLine1: string;
+    perishable: boolean;
     addressLine2: string;
     paid: boolean;
     verified: boolean;

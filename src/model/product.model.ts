@@ -15,6 +15,7 @@ const ProductSchema = new Schema({
     addressLine1: { type: String, required: true },
     addressLine2: { type: String, required: false },
     verified: { type: Boolean, required: true, default: false },
+    perishable: { type: Boolean, required: true },
     imageFiles: { type: [String], required: false },
     paid: { type: Boolean, required: true, default: false },
     deliveryStatus: {
