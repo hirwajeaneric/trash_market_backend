@@ -97,7 +97,7 @@ export const getProductById = asyncWrapper(async (req: Request, res: Response, n
 
 export const getAllAvailableProducts = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
     const products = await ProductModel.find({});
-    const availableProducts = products.filter((product: ProductDoc) => product.paid === false);
+    const availableProducts = products.filter((product: ProductDoc) => product.paid === false && product.description);
 
     res.status(200).json({ products: availableProducts });
 });
