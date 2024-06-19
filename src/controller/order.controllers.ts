@@ -3,6 +3,7 @@ import asyncWrapper from "../middlewares/AsyncWrapper";
 import { Order as OrderModel } from "../model/order.model";
 import { ValidateToken } from "../utils/password.utils";
 import { Product as ProductModel } from "../model/product.model";
+import { ProductDoc } from "../dto/product.dto";
 
 
 export const testRequest = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
@@ -179,12 +180,28 @@ export const updateOrderStatus = asyncWrapper(async (req: Request, res: Response
     const existingOrder = await OrderModel.findById(id);
 
     if (existingOrder) {
-        // existingOrde
         existingOrder.paid = true;
         const updatedOrder = await existingOrder.save();
         if (!updatedOrder) {
             return res.status(404).json({ message: "Adding/removing to cart failed, Order not found" });
         }
+        
+        const existingProduct = await ProductModel.findById(existingOrder.products[0].id);
+        
+        if (existingProduct) {
+            const soldProduct = existingProduct;
+            soldProduct.quantity = existingProduct?.quantity;
+            soldProduct.paid = true;
+            await soldProduct.save();
+        }
+
+        if (existingProduct && existingProduct?.quantity > 1 && existingProduct?.quantity > existingOrder.products[0].quantity) {
+            existingProduct.quantity = existingProduct?.quantity - existingOrder.products[0].quantity;
+            await existingProduct.save();
+        } else if (existingProduct && existingProduct?.quantity > 1 && existingProduct?.quantity === existingOrder.products[0].quantity){
+            await existingProduct.deleteOne();
+        }
+
         res.status(200).json({ message: "Cart updated successfully", order: updatedOrder });
     }
 });
