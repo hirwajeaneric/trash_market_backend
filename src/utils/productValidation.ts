@@ -32,13 +32,13 @@ export const validateAddProduct = [
   body('deliveryPrice')
     .isEmpty()
     .withMessage('Delivery price for this product must be provided'),
-  body('addressLine1')
+  body('province')
     .isEmpty()
     .withMessage('Product address line 1 must be provided')
     .not()
     .isLength({ min: 3 })
     .withMessage('Product address line 1 must be at least 3 characters long'),
-  body('addressLine2') // Assuming addressLine2 is required or optional based on your logic
+  body('district') // Assuming district is required or optional based on your logic
     .optional()
     .isString()
     .withMessage('Product address line 2 must be a string')
@@ -89,13 +89,13 @@ export const validateUpdateProduct = [
     .not()
     .isNumeric()
     .withMessage('Product unit price must be a valid number'),
-  body('addressLine1')
+  body('province')
     .not()
     .isEmpty()
     .withMessage('Product address line 1 must be provided')
     .isLength({ min: 3 })
     .withMessage('Product address line 1 must be at least 3 characters long'),
-  body('addressLine2') // Assuming addressLine2 is required or optional based on your logic
+  body('district') // Assuming district is required or optional based on your logic
     .optional()
     .isString()
     .withMessage('Product address line 2 must be a string')

@@ -19,8 +19,8 @@ export interface OrderDoc extends Document {
     seller: Schema.Types.ObjectId;
     deliveryPrice: Number;
     deliveryTime: Number;
-    addressLine1: String,
-    addressLine2?: String,
+    province: String,
+    district?: String,
     products: ProductTypes[];
     totalPrice: Number;
     paid: boolean;

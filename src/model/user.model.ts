@@ -7,11 +7,11 @@ interface UserDoc extends Document {
     phone: string;
     password: string;
     code: string;
-    addressLine1: string;
-    addressLine2: string;
+    province: string;
+    district: string;
     verified: boolean;
     salt: string;
-    city: string;
+    sector: string;
     role: "user" | "admin";
     otp: number;
     otpExpiryTime: Date;
@@ -38,9 +38,9 @@ const UserSchema = new Schema({
         },
         default: 'user'
     },
-    addressLine1: { type: String },
-    addressLine2: { type: String },
-    city: { type: String }
+    province: { type: String },
+    district: { type: String },
+    sector: { type: String }
 },{
     toJSON: {
         transform: (doc, ret) => {

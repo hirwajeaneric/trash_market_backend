@@ -9,9 +9,9 @@ export interface ProductDoc extends Document {
     unitPrice: number;
     deliveryTime: number;
     deliveryPrice: number;
-    addressLine1: string;
+    province: string;
     perishable: boolean;
-    addressLine2: string;
+    district: string;
     paid: boolean;
     verified: boolean;
     imageFiles: string[];

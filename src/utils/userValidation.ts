@@ -56,9 +56,9 @@ export const validateUserSignUp = [
         .withMessage('Password must be at least 6 characters long')
         .isStrongPassword()
         .withMessage('Password must be at least 6 characters with an Upper case character, lower case character, symbol and digit.'),
-    body('addressLine1').optional().isString(),
-    body('addressLine2').optional().isString(),
-    body('city').optional().isString(),
+    body('province').optional().isString(),
+    body('district').optional().isString(),
+    body('sector').optional().isString(),
     handleValidationErrors
 ];
 
@@ -91,9 +91,9 @@ export const validateUpdateUserInfo = [
         .isString()
         .isLength({ min: 6, max: 6 })
         .withMessage('Invalid code, payment code must be 6 characters long'),
-    body('addressLine1').optional().isString(),
-    body('addressLine2').optional().isString(),
-    body('city').optional().isString(),
+    body('province').optional().isString(),
+    body('district').optional().isString(),
+    body('sector').optional().isString(),
     handleValidationErrors
 ];
 

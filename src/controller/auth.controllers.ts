@@ -192,9 +192,9 @@ export const updateAccount = asyncWrapper(async (req: Request, res: Response, ne
             email: req.body.email,
             phone: req.body.phone,
             code: req.body.code,
-            addressLine1: req.body.addressLine1,
-            addressLine2: req.body.addressLine2,
-            city: req.body.city,
+            province: req.body.province,
+            district: req.body.district,
+            sector: req.body.sector,
         },
         new: true
     });

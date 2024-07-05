@@ -20,11 +20,11 @@ const OrderSchema = new Schema({
         type: Number,
         required: true,
     },
-    addressLine1: {
+    province: {
         type: String,
         required: false,
     },
-    addressLine2: {
+    district: {
         type: String,
         required: false,
     },
