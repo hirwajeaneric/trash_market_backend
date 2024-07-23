@@ -1,4 +1,4 @@
-import { model, Document, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import { OrderDoc } from "../dto/order.dto";
 
 const OrderSchema = new Schema({
