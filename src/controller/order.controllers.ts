@@ -65,7 +65,7 @@ export const list = asyncWrapper(async (req: Request, res: Response, next: NextF
 
 
 export const update = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.query; // Assuming order ID comes from the request URL
+    const { id } = req.query;
 
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -113,7 +113,7 @@ export const update = asyncWrapper(async (req: Request, res: Response, next: Nex
 });
 
 export const deleteOrder = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.query; // Assuming order ID comes from the request URL
+    const { id } = req.query;
 
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -134,7 +134,7 @@ export const deleteOrder = asyncWrapper(async (req: Request, res: Response, next
 });
 
 export const manageOrderProducts = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.query; // Assuming order ID comes from the request URL
+    const { id } = req.query;
 
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -169,8 +169,28 @@ export const manageOrderProducts = asyncWrapper(async (req: Request, res: Respon
     }
 });
 
+export const markOrderAsDelivered = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.query;
+
+    const isTokenValid = await ValidateToken(req);
+    if (!isTokenValid) {
+        return res.status(400).json({ message: "Access denied" });
+    }
+
+    const existingOrder = await OrderModel.findById(id);
+    if (existingOrder) {
+        existingOrder.deliveryStatus = {
+            client: "Pending",
+            seller: "Delivered"
+        }
+        await existingOrder.save();
+    }
+
+    res.status(200).json({ message: "Order marked as delivered" });
+});
+
 export const updateOrderStatus = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.query; // Assuming order ID comes from the request URL
+    const { id } = req.query;
 
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {
@@ -185,9 +205,9 @@ export const updateOrderStatus = asyncWrapper(async (req: Request, res: Response
         if (!updatedOrder) {
             return res.status(404).json({ message: "Adding/removing to cart failed, Order not found" });
         }
-        
+
         const existingProduct = await ProductModel.findById(existingOrder.products[0].id);
-        
+
         if (existingProduct) {
             const soldProduct = existingProduct;
             soldProduct.quantity = existingProduct?.quantity;
@@ -198,7 +218,7 @@ export const updateOrderStatus = asyncWrapper(async (req: Request, res: Response
         if (existingProduct && existingProduct?.quantity > 1 && existingProduct?.quantity > existingOrder.products[0].quantity) {
             existingProduct.quantity = existingProduct?.quantity - existingOrder.products[0].quantity;
             await existingProduct.save();
-        } else if (existingProduct && existingProduct?.quantity > 1 && existingProduct?.quantity === existingOrder.products[0].quantity){
+        } else if (existingProduct && existingProduct?.quantity > 1 && existingProduct?.quantity === existingOrder.products[0].quantity) {
             await existingProduct.deleteOne();
         }
 
@@ -255,7 +275,7 @@ export const getSellerOrders = asyncWrapper(async (req: Request, res: Response, 
 
 
 export const getOrderById = asyncWrapper(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.query; // Assuming order ID comes from the request URL
+    const { id } = req.query;
 
     const isTokenValid = await ValidateToken(req);
     if (!isTokenValid) {

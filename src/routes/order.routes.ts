@@ -10,7 +10,8 @@ import {
     // testRequest,
     deleteOrder,
     getAllClientOrders,
-    updateOrderStatus
+    updateOrderStatus,
+    markOrderAsDelivered
 } from "../controller/order.controllers";
 
 const orderRouter = express.Router();
@@ -20,6 +21,7 @@ orderRouter.get('/list', list);
 orderRouter.put('/update', update);
 orderRouter.put('/updateCart', manageOrderProducts);
 orderRouter.get('/updateCartStatus', updateOrderStatus);
+orderRouter.get('/markOrderAsDelivered', markOrderAsDelivered);
 orderRouter.get('/findById', getOrderById);
 orderRouter.get('/client', getClientOrder);
 orderRouter.get('/purchases', getAllClientOrders);
