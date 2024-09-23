@@ -18,7 +18,7 @@ export const addNew = asyncWrapper(async (req: Request, res: Response, next: Nex
         return res.status(400).json({ message: "Access denied" });
     };
 
-    const existingOrder = await OrderModel.findOne({ client: req.body.client });
+    const existingOrder = await OrderModel.findOne({ client: req.body.client, paid: false });
     const productId = req.body.products[0].id;
 
     if (existingOrder) {
